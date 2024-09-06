@@ -5,6 +5,7 @@ public class Game implements Comparable<Game>{
     public String away;
     private boolean marked;
     private int hash;
+    private int initialHash;
 
     private LocalDate date;
     private Genie genie = Genie.getInstance();
@@ -13,6 +14,7 @@ public class Game implements Comparable<Game>{
         away = awayTeam;
         marked = false;
         hash = 32 * genie.teamId(homeTeam) + genie.teamId(awayTeam);
+        initialHash = hash;
     }
 
     public void mark(LocalDate sched_date) {
@@ -78,6 +80,9 @@ public class Game implements Comparable<Game>{
         return o.hashCode() == this.hashCode();
     }
 
+    public boolean sameMatchup(Game o) {
+        return initialHash == o.initialHash;
+    }
     @Override
     public int hashCode() {
         return hash;

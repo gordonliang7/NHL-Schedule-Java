@@ -161,4 +161,52 @@ public class TestGame {
             assertThat(game.involves(awayTeam)).isTrue();
         }
     }
+
+    @Test
+    public void comparisonTest() {
+        for (int i = 0; i < fullSeason; i++) {
+            int indexH = random.nextInt(teamList.length);
+            int indexA;
+            do {
+                indexA = random.nextInt(teamList.length);
+            } while (indexA == indexH);
+            String homeTeam = teamList[indexH];
+            String awayTeam = teamList[indexA];
+            Game game1 = new Game(homeTeam, awayTeam);
+            Game game2 = new Game(homeTeam, awayTeam);
+            assertThat(game1.equals(game2)).isTrue();
+            assertThat(game1.sameMatchup(game2)).isTrue();
+            assertThat(game2.equals(game1)).isTrue();
+            assertThat(game2.sameMatchup(game1)).isTrue();
+            game1.mark(LocalDate.of(2023,4,5));
+            assertThat(game1.equals(game2)).isFalse();
+            assertThat(game1.sameMatchup(game2)).isTrue();
+            assertThat(game2.equals(game1)).isFalse();
+            assertThat(game2.sameMatchup(game1)).isTrue();
+        }
+    }
+
+    @Test
+    public void testInitialHeuristic() {
+        ArrayList<Game> games1 = new ArrayList<>();
+        ArrayList<Game> games2 = new ArrayList<>();
+        for (String homeTeam: teamList) {
+            for (String awayTeam: teamList) {
+                if (homeTeam == awayTeam) {
+                    continue;
+                }
+                games1.add(new Game(homeTeam, awayTeam));
+                games2.add(new Game(homeTeam, awayTeam));
+            }
+        }
+        for (Game game1: games1) {
+            for (Game game2: games2) {
+                if ((game1.home == game2.home) && (game1.away == game2.away)) {
+                    assertThat(game1.hashCode()).isEqualTo(game2.hashCode());
+                    continue;
+                }
+                assertThat(game1.hashCode()).isNotEqualTo(game2.hashCode());
+            }
+        }
+    }
 }

@@ -67,7 +67,7 @@ public class Schedule {
         for (Team t : teams.values()) {
             gamesToday += t.advanceDay(currentDate);
         }
-        currentDate.plusDays(1);
+        currentDate = currentDate.plusDays(1);
         return gamesToday;
     }
 

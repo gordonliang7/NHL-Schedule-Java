@@ -68,6 +68,7 @@ public class Team {
     }
 
     public double scheduleHome(Game game) {
+        assert game.homeT(this);
         homeStand++;
         roadTrip = 0;
         return schedule(game);
@@ -86,6 +87,7 @@ public class Team {
     }
 
     public double scheduleAway(Game game) {
+        assert game.awayT(this);
         homeStand = 0;
         roadTrip++;
         return schedule(game);
@@ -108,14 +110,14 @@ public class Team {
         int threeCount = 0; // Count for 3 games in 3 days
         int sevenCount = 0; // Count for more than 3 games 7 day span
         for (Game done_game: lastThree) {
-            LocalDate game_date = done_game.getDate();
-            if (ChronoUnit.DAYS.between(date, game_date) <= 7) {
+            int daysBetween = (int) ChronoUnit.DAYS.between(done_game.getDate(), date);
+            if (daysBetween <= 6) {
                 sevenCount++;
                 if (done_game.opponent(this).equals(game.opponent(this))) {
                     matchupWithinWeek++;
                 }
             }
-            if (ChronoUnit.DAYS.between(date, game_date) <= 3) {
+            if (daysBetween <= 2) { //Make sure we're querying the right games
                 threeCount++;
             }
         }
@@ -131,7 +133,7 @@ public class Team {
         if (recentGame == null) {
             return true;
         }
-        return !(recentGame.home.equals(game.home) && recentGame.away.equals(game.away));
+        return !recentGame.sameMatchup(game);
     }
 
     public int getGamesRemaining() {
