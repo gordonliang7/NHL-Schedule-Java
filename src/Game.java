@@ -41,7 +41,7 @@ public class Game implements Comparable<Game>{
 
     @Override
     public int compareTo(Game o) {
-        if ((hash % 100000) == (o.hash % 100000)) {
+        if (hash == o.hash) {
             return 0;
         }
         return Integer.compare(hash, o.hash);
@@ -65,5 +65,21 @@ public class Game implements Comparable<Game>{
     }
     public LocalDate getDate(){
         return date;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || !(o instanceof Game)) {
+            return false;
+        }
+        return o.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
     }
 }

@@ -2,10 +2,11 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Schedule {
     private ArrayList<Game> toSchedule;
-    private ArrayList<Game> scheduled;
+    private HashSet<Game> scheduled;
     private LocalDate endOfSeason;
     private LocalDate currentDate;
     private HashMap<String, Team> teams;
@@ -46,6 +47,8 @@ public class Schedule {
 
     public double markGame(Game game) {
         assert toSchedule.remove(game); // assert this is true
+        game.mark(currentDate);
+        scheduled.add(game);
         double cost1 = teams.get(game.home.toString()).scheduleHome(game);
         double cost2 = teams.get(game.away.toString()).scheduleAway(game);
         return cost1 + cost2;
@@ -98,6 +101,17 @@ public class Schedule {
             }
         }
         return legalActions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) || !(o instanceof Schedule)) {
+            return false;
+        }
+        return this.scheduled == ((Schedule) o).scheduled;
     }
 
     public boolean isGoalState() {
