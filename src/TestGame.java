@@ -6,6 +6,7 @@ import java.util.*;
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestGame {
+    private static Random random = new Random();
     public static Genie genie = Genie.getInstance();
     public static String[] teamList = genie.getTeams();
     final static int year = 2024;
@@ -17,7 +18,6 @@ public class TestGame {
         HashSet<Game> schedule2 = new HashSet<>();
 
         // Test teamId method
-        Random random = new Random();
         for (int i = 0; i < fullSeason; i++) {
             int index1 = random.nextInt(teamList.length);
             int index2;
@@ -45,7 +45,6 @@ public class TestGame {
         HashSet<Game> schedule2 = new HashSet<>();
 
         // Test teamId method
-        Random random = new Random();
         for (int i = 0; i < fullSeason; i++) {
             int index1 = random.nextInt(teamList.length);
             int index2;
@@ -73,7 +72,6 @@ public class TestGame {
         HashSet<Game> schedule2 = new HashSet<>();
 
         // Test teamId method
-        Random random = new Random();
         for (int i = 0; i < fullSeason; i++) {
             int index1 = random.nextInt(teamList.length);
             int index2;
@@ -105,7 +103,6 @@ public class TestGame {
         HashSet<Game> schedule2 = new HashSet<>();
 
         // Test teamId method
-        Random random = new Random();
         for (int i = 0; i < fullSeason; i++) {
             int index1 = random.nextInt(teamList.length);
             int index2;
@@ -131,5 +128,37 @@ public class TestGame {
             schedule2.add(game);
         }
         assertThat(schedule1.equals(schedule2)).isTrue();
+    }
+
+    @Test
+    public void testHomeAwayInvolved() {
+        ArrayList<Game> gamesStored = new ArrayList<>();
+        ArrayList<String> homeTeams = new ArrayList<>();
+        ArrayList<String> awayTeams = new ArrayList<>();
+        HashMap<String, Team> teamObjs = new HashMap<>();
+        for (String team: teamList) {
+            teamObjs.put(team, new Team(team));
+        }
+        for (int i = 0; i < fullSeason; i++) {
+            int indexH = random.nextInt(teamList.length);
+            int indexA;
+            do {
+                indexA = random.nextInt(teamList.length);
+            } while (indexA == indexH);
+            gamesStored.add(new Game(teamList[indexH], teamList[indexA]));
+            homeTeams.add(teamList[indexH]);
+            awayTeams.add(teamList[indexA]);
+        }
+        for (int i = 0; i < fullSeason; i++) {
+            Team homeTeam = teamObjs.get(homeTeams.get(i));
+            Team awayTeam = teamObjs.get(awayTeams.get(i));
+            Game game = gamesStored.get(i);
+            assertThat(game.homeT(homeTeam)).isTrue();
+            assertThat(game.awayT(awayTeam)).isTrue();
+            assertThat(game.homeT(awayTeam)).isFalse();
+            assertThat(game.awayT(homeTeam)).isFalse();
+            assertThat(game.involves(homeTeam)).isTrue();
+            assertThat(game.involves(awayTeam)).isTrue();
+        }
     }
 }
