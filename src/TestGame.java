@@ -187,7 +187,7 @@ public class TestGame {
     }
 
     @Test
-    public void testInitialHeuristic() {
+    public void testInitialHash() {
         ArrayList<Game> games1 = new ArrayList<>();
         ArrayList<Game> games2 = new ArrayList<>();
         for (String homeTeam: teamList) {

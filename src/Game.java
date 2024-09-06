@@ -37,7 +37,11 @@ public class Game implements Comparable<Game>{
 
     @Override
     public String toString() {
-        return (away + " @ " + home);
+        String starter = "";
+        if (marked) {
+            starter += date.toString() + ": ";
+        }
+        return starter + away + " @ " + home;
     }
 
 

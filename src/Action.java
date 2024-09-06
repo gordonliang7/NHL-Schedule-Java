@@ -40,6 +40,16 @@ public class Action {
                 return 0;
         }
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if ((o == null) ||!(o instanceof Action)) {
+            return false;
+        }
+        return this.hashCode() == o.hashCode();
+    }
 
     public static Action advanceDay(boolean withoutPenalty) {
         return new Action(null, withoutPenalty);

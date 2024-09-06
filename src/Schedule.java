@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class Schedule {
+public class Schedule implements Comparable<Schedule>{
     private ArrayList<Game> toSchedule;
     private HashSet<Game> scheduled;
     private LocalDate endOfSeason;
@@ -104,6 +104,7 @@ public class Schedule {
         }
         legalActions.add(Action.advanceDay(false));
         for (Game game : toSchedule) {
+            // Maybe create action first to weed out duplicates before querying validity
             if (bothValid(game)) {
                 legalActions.add(Action.gameAction(game));
             }
@@ -121,8 +122,32 @@ public class Schedule {
         }
         return this.scheduled.equals(((Schedule) o).scheduled);
     }
+    public double heuristic() { // Starting with a trivial heuristic
+        return 0;
+    }
 
     public boolean isGoalState() {
         return toSchedule.size() == 0;
+    }
+    public double getTotalCost() {
+        return totalCost;
+    }
+    @Override
+    public String toString() {
+        String returnedString = "";
+        for (Team team: teams.values()) {
+            break;
+            //returnedString += team.toString();
+            //returnedString += "\n";
+        }
+        for (Game game: scheduled) {
+            returnedString += game.toString() + "\n";
+        }
+        return returnedString;
+    }
+
+    @Override
+    public int compareTo(Schedule o) {
+        return Double.compare(getTotalCost() + heuristic(),o.getTotalCost() + heuristic());
     }
 }

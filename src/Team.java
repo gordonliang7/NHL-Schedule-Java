@@ -23,7 +23,13 @@ public class Team {
 
     @Override
     public String toString() {
-        return (name);
+        return name;
+    }
+    private String representGame(Game game) {
+        if (game.homeT(this)) {
+            return "vs. " + game.opponent(this).toString();
+        }
+        return null;
     }
     private Team(String teamName, String lastloc_up, LocalDate lastdate_up,
                             int homestand_up, int roadtrip_up,
