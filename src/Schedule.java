@@ -17,13 +17,20 @@ public class Schedule {
                     LocalDate sznEnd, LocalDate date,
                     ArrayList<Team> teamLst, ArrayList<LocalDate> mandatory_offs) {
         this.toSchedule = toSchedule;
+        this.scheduled = new HashSet<>();
         endOfSeason = sznEnd;
         currentDate = date;
-        teams = new HashMap<String, Team>();
+        teams = new HashMap<>();
         for (Team t : teamLst) {
             teams.put(t.toString(), t);
         }
         mandatoryOffDays = mandatory_offs;
+    }
+
+    private void loadCurrentSchedule(HashSet<Game> currentSchedule) {
+        for (Game game: currentSchedule) {
+            this.scheduled.add(game.copy());
+        }
     }
 
     public void addCost(double added_cost) {
@@ -31,8 +38,8 @@ public class Schedule {
     }
 
     public Schedule copy() {
-        ArrayList<Game> schedule_copy = new ArrayList<Game>();
-        ArrayList<Team> teams_copy = new ArrayList<Team>();
+        ArrayList<Game> schedule_copy = new ArrayList<>();
+        ArrayList<Team> teams_copy = new ArrayList<>();
         for (Game i : toSchedule) {
             schedule_copy.add(i.copy());
         }
@@ -42,6 +49,7 @@ public class Schedule {
         Schedule newSched = new Schedule(schedule_copy, endOfSeason, currentDate,
                 teams_copy, mandatoryOffDays);
         newSched.addCost(totalCost);
+        newSched.loadCurrentSchedule(scheduled);
         return newSched;
     }
 
@@ -82,16 +90,16 @@ public class Schedule {
         return teams.get(game.home).valid(game, currentDate) && teams.get(game.away).valid(game, currentDate);
     }
 
-    public ArrayList<Action> getLegalActions() {
-        ArrayList<Action> legalActions = new ArrayList<Action>();
+    public HashSet<Action> getLegalActions() {
+        HashSet<Action> legalActions = new HashSet<>();
         if (mandatoryOffDays.contains(currentDate)) {
             legalActions.add(Action.advanceDay(true));
             return legalActions;
         }
         int daysLeft = (int) ChronoUnit.DAYS.between(endOfSeason, currentDate);
         for (Team t : teams.values()) {
-            if (daysLeft < (2 * t.getGamesRemaining() / 3)) {
-                return legalActions;
+            if (daysLeft < (2 * t.getGamesRemaining() / 3)) { // Not enough days to finish
+                return new HashSet<>(); // Terminate search
             }
         }
         legalActions.add(Action.advanceDay(false));
@@ -111,7 +119,7 @@ public class Schedule {
         if ((o == null) || !(o instanceof Schedule)) {
             return false;
         }
-        return this.scheduled.equals((HashSet<Game>) ((Schedule) o).scheduled);
+        return this.scheduled.equals(((Schedule) o).scheduled);
     }
 
     public boolean isGoalState() {

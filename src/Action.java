@@ -27,6 +27,20 @@ public class Action {
         return attachedGame;
     }
 
+    @Override
+    public int hashCode() {
+        switch (representation()) {
+            case "GAME":
+                return attachedGame.hashCode();
+            case "ADVANCE DAY WITHOUT PENALTY":
+                return -1;
+            case "ADVANCE DAY":
+                return -7;
+            default: // Not really possible but sure
+                return 0;
+        }
+    }
+
     public static Action advanceDay(boolean withoutPenalty) {
         return new Action(null, withoutPenalty);
     }
