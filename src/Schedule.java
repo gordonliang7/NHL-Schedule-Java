@@ -111,7 +111,7 @@ public class Schedule {
         if ((o == null) || !(o instanceof Schedule)) {
             return false;
         }
-        return this.scheduled == ((Schedule) o).scheduled;
+        return this.scheduled.equals((HashSet<Game>) ((Schedule) o).scheduled);
     }
 
     public boolean isGoalState() {
