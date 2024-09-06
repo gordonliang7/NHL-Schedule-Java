@@ -12,12 +12,12 @@ public class Game implements Comparable<Game>{
         home = homeTeam;
         away = awayTeam;
         marked = false;
-        hash = 100 * genie.teamId(awayTeam) + genie.teamId(homeTeam);
+        hash = 32 * genie.teamId(homeTeam) + genie.teamId(awayTeam);
     }
 
     public void mark(LocalDate sched_date) {
         date = sched_date;
-        hash += 100000*(date.getDayOfMonth()+(100*date.getMonthValue())+(10000*date.getYear())) + 10000;
+        hash += ((date.getDayOfMonth()*992)+(31*992*date.getMonthValue()));
         marked = true;
     }
 

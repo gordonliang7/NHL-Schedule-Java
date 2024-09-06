@@ -1,6 +1,6 @@
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Team {
     private String name;
@@ -10,38 +10,49 @@ public class Team {
     private int roadTrip = 0;
     private int gamesRemaining = 82;
     private int gameStreak = 0;
-    private ArrayList<Game> scheduledGames;
+    private Game recentGame = null;
+    private LinkedList<Game> lastThree;
 
     private Genie genie = Genie.getInstance();
     public Team(String teamName) {
         name = teamName;
         lastGameDate = LocalDate.MIN;
         lastGameLocation = teamName;
-        scheduledGames = new ArrayList<>();
+        lastThree = new LinkedList<>();
     }
 
     @Override
     public String toString() {
         return (name);
     }
-    private void alterStats(String lastloc_up, LocalDate lastdate_up,
+    private Team(String teamName, String lastloc_up, LocalDate lastdate_up,
                             int homestand_up, int roadtrip_up,
                             int gamesremaining_up, int gamestreak_up,
-                            ArrayList<Game> scheduledGamesLst) {
+                            LinkedList<Game> scheduledGamesLst) {
+        name = teamName;
         lastGameLocation = lastloc_up;
         lastGameDate = lastdate_up;
         homeStand = homestand_up;
         roadTrip = roadtrip_up;
         gamesRemaining = gamesremaining_up;
         gameStreak = gamestreak_up;
-        scheduledGames = scheduledGamesLst;
+        lastThree = new LinkedList<>();
+        for (Game game: scheduledGamesLst) {
+            addGame(game);
+        }
     }
     public Team copy() {
-        Team newTeam = new Team(name);
-        newTeam.alterStats(lastGameLocation, lastGameDate,
+        return new Team(name, lastGameLocation, lastGameDate,
                 homeStand, roadTrip, gamesRemaining, gameStreak,
-                scheduledGames);
-        return newTeam;
+                lastThree);
+    }
+
+    private void addGame(Game game) {
+        lastThree.add(game);
+        recentGame = game;
+        while (lastThree.size() > 3) {
+            lastThree.remove();
+        }
     }
 
     private double schedule(Game game) {
@@ -49,7 +60,7 @@ public class Team {
         double distance = genie.getDistance(lastGameLocation, game.home.toString());
         int daysBetween = (int) (3 - Math.min(3, ChronoUnit.DAYS.between(game.getDate(), lastGameDate)));
         double cost = Math.pow(distance, 1 + (daysBetween*.1));
-        scheduledGames.add(game);
+        addGame(game);
         lastGameDate = game.getDate();
         lastGameLocation = game.home.toString();
         gamesRemaining--;
@@ -96,15 +107,8 @@ public class Team {
         int matchupWithinWeek = 0; // Count same opponent matchups within a week
         int threeCount = 0; // Count for 3 games in 3 days
         int sevenCount = 0; // Count for more than 3 games 7 day span
-        Game recentGame = null;
-        for (Game done_game: scheduledGames) {
+        for (Game done_game: lastThree) {
             LocalDate game_date = done_game.getDate();
-            if (recentGame == null) {
-                recentGame = done_game;
-            }
-            else if (game_date.isAfter(recentGame.getDate())) {
-                recentGame = done_game;
-            }
             if (ChronoUnit.DAYS.between(date, game_date) <= 7) {
                 sevenCount++;
                 if (done_game.opponent(this).equals(game.opponent(this))) {
@@ -124,7 +128,7 @@ public class Team {
         if (game.awayT(this) && (roadTrip > 4)) {
             return false;
         }
-        if (scheduledGames.size() == 0) {
+        if (recentGame == null) {
             return true;
         }
         return !(recentGame.home.equals(game.home) && recentGame.away.equals(game.away));
