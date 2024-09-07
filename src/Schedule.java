@@ -96,7 +96,7 @@ public class Schedule implements Comparable<Schedule>{
             legalActions.add(Action.advanceDay(true));
             return legalActions;
         }
-        int daysLeft = (int) ChronoUnit.DAYS.between(endOfSeason, currentDate);
+        int daysLeft = (int) ChronoUnit.DAYS.between(currentDate, endOfSeason);
         for (Team t : teams.values()) {
             if (daysLeft < (2 * t.getGamesRemaining() / 3)) { // Not enough days to finish
                 return new HashSet<>(); // Terminate search

@@ -20,7 +20,7 @@ public class APrimeSearch {
                 LocalDate.of(2022,8,1), teams, new ArrayList<LocalDate>()));
         int iterations = 0;
         while (!order.isEmpty()) {
-            if (iterations%1000 == 0) {
+            if (iterations%100 == 0) {
                 System.out.println(order.size());
             }
             Schedule state = order.remove();
@@ -32,7 +32,7 @@ public class APrimeSearch {
                 System.out.println(state.toString());
                 break;
             }
-            HashSet<Action> legalActions = state.getLegalActions(); //TODO: Fix legal actions
+            HashSet<Action> legalActions = state.getLegalActions();
             for (Action action: legalActions) {
                 order.add(state.getSuccessor(action));
             }
